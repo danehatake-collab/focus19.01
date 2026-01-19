@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Focus">
+    <meta name="theme-color" content="#050505">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>Focus</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-180.png">
+    
+    <!-- Premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════════
+           DESIGN SYSTEM v2 — Immersive Focus Experience
+           Premium minimalism with bold typography
+           ═══════════════════════════════════════════════════════════════ */
+        
+        :root {
+            /* Deep, cinematic dark palette */
+            --bg-void: #030303;
+            --bg-primary: #080808;
+            --bg-elevated: #0f0f0f;
+            --bg-surface: #161616;
+            --bg-glass: rgba(255, 255, 255, 0.035);
+            --bg-glass-hover: rgba(255, 255, 255, 0.07);
+            
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.45);
+            --text-muted: rgba(255, 255, 255, 0.25);
+            
+            /* Warm cream accent */
+            --accent: #f7f3ed;
+            --accent-soft: rgba(247, 243, 237, 0.9);
+            --accent-dim: rgba(247, 243, 237, 0.12);
+            --accent-glow: rgba(247, 243, 237, 0.06);
+            
+            /* Semantic colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            
+            --border: rgba(255, 255, 255, 0.1);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            
+            /* Typography — Outfit is bold & modern */
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            
+            /* Spacing */
+            --space-2xs: 4px;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+            
+            /* Radius */
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --radius-full: 9999px;
+            
+            /* Safe areas */
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            
+            /* Animation */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           BASE
+           ═══════════════════════════════════════════════════════════════ */
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+        
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-void);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        ::selection {
+            background: var(--accent-dim);
+            color: var(--text-primary);
+        }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-full); }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           APP CONTAINER
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .app {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           SCREENS
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+        
+        .screen.active { display: flex; }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           SETUP VIEW — Before starting timer
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .setup-view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-xl);
+            padding-top: calc(var(--safe-top) + var(--space-xl));
+            padding-bottom: calc(var(--safe-bottom) + 100px);
+            gap: var(--space-2xl);
+            transition: all 0.5s var(--ease-out);
+        }
+        
+        .setup-view.hidden {
+            opacity: 0;
+            transform: scale(0.96);
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+        }
+        
+        /* Minimal header */
+        .setup-header {
+            text-align: center;
+        }
+        
+        .setup-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+        }
+        
+        /* Task Input — Clean underline style */
+        .task-container {
+            width: 100%;
+            max-width: 340px;
+        }
+        
+        .task-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            padding: var(--space-md) 0;
+            font-family: var(--font-main);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            transition: all 0.3s var(--ease-out);
+            letter-spacing: -0.01em;
+        }
+        
+        .task-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .task-input:focus {
+            outline: none;
+            border-color: var(--accent-soft);
+        }
+        
+        /* Time Preview — Big bold numbers */
+        .time-preview {
+            font-family: var(--font-main);
+            font-size: clamp(80px, 22vw, 130px);
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            color: var(--text-primary);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Time Presets — Modern pills */
+        .presets-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .presets-row {
+            display: flex;
+            gap: var(--space-xs);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .preset-btn {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-glass);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-full);
+            font-family: var(--font-main);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-out);
+            min-width: 68px;
+        }
+        
+        .preset-btn:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--border);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn:active {
+            transform: translateY(0) scale(0.97);
+        }
+        
+        .preset-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-void);
+        }
+        
+        /* Custom time input */
+        .custom-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .custom-input {
+            width: 60px;
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--bg-glass);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-family: var(--font-main);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            transition: all 0.25s var(--ease-out);
+        }
+        
+        .custom-input:focus {
+            outline: none;
+            border-color: var(--accent-dim);
+        }
+        
+        .custom-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .custom-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        
+        /* Start Button — Premium gradient */
+        .start-btn {
+            width: 100%;
+            max-width: 260px;
+            padding: 18px var(--space-xl);
+            background: linear-gradient(135deg, var(--accent) 0%, #e8e4de 100%);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: var(--font-main);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--bg-void);
+            cursor: pointer;
+            transition: all 0.3s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.01em;
+        }
+        
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 15px 50px rgba(247, 243, 237, 0.25),
+                0 0 0 1px rgba(247, 243, 237, 0.15);
+        }
+        
+        .start-btn:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           FOCUS VIEW — The Immersive Timer Experience
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .focus-view {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-xl);
+            background: var(--bg-void);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s var(--ease-out);
+            z-index: 100;
+        }
+        
+        .focus-view.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Subtle radial glow at top */
+        .focus-view::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140%;
+            height: 70%;
+            background: radial-gradient(ellipse at center, rgba(247, 243, 237, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .focus-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-lg);
+            z-index: 1;
+        }
+        
+        /* Task name — Large and prominent */
+        .focus-task {
+            font-size: clamp(24px, 7vw, 36px);
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 340px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            opacity: 0;
+            transform: translateY(-15px);
+            animation: slideIn 0.7s var(--ease-out) 0.1s forwards;
+        }
+        
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* THE TIMER — Hero typography */
+        .focus-timer {
+            font-family: var(--font-main);
+            font-size: clamp(110px, 38vw, 220px);
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            color: var(--text-primary);
+            line-height: 0.85;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 100px rgba(255, 255, 255, 0.08);
+            transition: all 0.3s var(--ease-spring);
+        }
+        
+        .focus-timer.entering {
+            animation: timerIn 0.8s var(--ease-out) forwards;
+        }
+        
+        @keyframes timerIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .focus-timer.breathing {
+            animation: breathe 5s ease-in-out infinite;
+        }
+        
+        @keyframes breathe {
+            0%, 100% { 
+                opacity: 1;
+                text-shadow: 0 0 100px rgba(255, 255, 255, 0.08);
+            }
+            50% { 
+                opacity: 0.92;
+                text-shadow: 0 0 140px rgba(255, 255, 255, 0.12);
+            }
+        }
+        
+        .focus-timer.pulse {
+            animation: pulse 0.4s var(--ease-spring);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.015); }
+        }
+        
+        /* Status text */
+        .focus-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            opacity: 0;
+            animation: slideIn 0.7s var(--ease-out) 0.4s forwards;
+        }
+        
+        .focus-status.paused {
+            color: var(--warning);
+        }
+        
+        /* Control buttons */
+        .focus-controls {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+            opacity: 0;
+            animation: slideIn 0.7s var(--ease-out) 0.5s forwards;
+        }
+        
+        .ctrl-btn {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-glass);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-out);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .ctrl-btn svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-secondary);
+            transition: all 0.25s var(--ease-out);
+        }
+        
+        .ctrl-btn:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--text-tertiary);
+            transform: scale(1.1);
+        }
+        
+        .ctrl-btn:hover svg {
+            color: var(--text-primary);
+        }
+        
+        .ctrl-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Pause button states */
+        .ctrl-btn.pause.is-paused {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--success);
+        }
+        
+        .ctrl-btn.pause.is-paused svg {
+            color: var(--success);
+        }
+        
+        /* Stop button hover */
+        .ctrl-btn.stop:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: var(--danger);
+        }
+        
+        .ctrl-btn.stop:hover svg {
+            color: var(--danger);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           STATS SCREEN
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .stats-screen {
+            padding: var(--space-xl);
+            padding-top: calc(var(--safe-top) + var(--space-xl));
+            padding-bottom: calc(var(--safe-bottom) + 100px);
+            gap: var(--space-xl);
+        }
+        
+        .stats-header {
+            text-align: center;
+        }
+        
+        .stats-title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .stats-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: var(--space-2xs);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-sm);
+        }
+        
+        .stat-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            transition: all 0.25s var(--ease-out);
+        }
+        
+        .stat-card:hover {
+            background: var(--bg-glass-hover);
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            margin-top: var(--space-2xs);
+        }
+        
+        /* Sessions */
+        .sessions-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            min-height: 0;
+        }
+        
+        .sessions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sessions-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+        
+        .clear-btn {
+            padding: var(--space-2xs) var(--space-sm);
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-main);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-out);
+        }
+        
+        .clear-btn:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+        
+        .sessions-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            transition: all 0.2s var(--ease-out);
+        }
+        
+        .session-item:hover {
+            background: var(--bg-glass-hover);
+        }
+        
+        .session-task {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+        
+        .session-meta {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .session-date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .session-duration {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .sessions-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-muted);
+            gap: var(--space-sm);
+        }
+        
+        .sessions-empty-icon {
+            font-size: 36px;
+            opacity: 0.25;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           BOTTOM NAV
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--space-sm) var(--space-lg);
+            padding-bottom: calc(var(--space-sm) + var(--safe-bottom));
+            background: linear-gradient(180deg, transparent 0%, var(--bg-void) 50%);
+            display: flex;
+            justify-content: center;
+            gap: var(--space-2xl);
+            z-index: 50;
+            transition: all 0.4s var(--ease-out);
+        }
+        
+        .bottom-nav.hidden {
+            opacity: 0;
+            transform: translateY(100%);
+            pointer-events: none;
+        }
+        
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: var(--space-sm) var(--space-md);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s var(--ease-out);
+            border-radius: var(--radius-md);
+        }
+        
+        .nav-btn:hover {
+            background: var(--bg-glass);
+        }
+        
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-muted);
+            transition: all 0.25s ease;
+        }
+        
+        .nav-btn.active svg {
+            color: var(--text-primary);
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.25s ease;
+        }
+        
+        .nav-btn.active .nav-label {
+            color: var(--text-primary);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           NOTIFICATION TOAST
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .toast {
+            position: fixed;
+            top: calc(var(--safe-top) + var(--space-md));
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s var(--ease-out);
+            z-index: 200;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════════ */
+        
+        @media (min-width: 768px) {
+            .app {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .focus-timer {
+                font-size: 200px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .focus-timer { font-size: 90px; }
+            .preset-btn { min-width: 56px; padding: var(--space-xs) var(--space-sm); font-size: 13px; }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        
+        <!-- TIMER SCREEN -->
+        <div class="screen active" id="timerScreen">
+            
+            <!-- Setup View -->
+            <div class="setup-view" id="setupView">
+                <div class="setup-header">
+                    <div class="setup-label">Фокус-сессия</div>
+                </div>
+                
+                <div class="task-container">
+                    <input 
+                        type="text" 
+                        class="task-input" 
+                        id="taskInput" 
+                        placeholder="Над чем работаем?"
+                        maxlength="35"
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <div class="time-preview" id="timePreview">25:00</div>
+                
+                <div class="presets-wrapper">
+                    <div class="presets-row">
+                        <button class="preset-btn" data-minutes="15">15м</button>
+                        <button class="preset-btn active" data-minutes="25">25м</button>
+                        <button class="preset-btn" data-minutes="45">45м</button>
+                        <button class="preset-btn" data-minutes="60">60м</button>
+                        <button class="preset-btn" data-minutes="90">90м</button>
+                    </div>
+                    <div class="custom-row">
+                        <input type="number" class="custom-input" id="customMinutes" placeholder="—" min="1" max="180">
+                        <span class="custom-label">минут</span>
+                    </div>
+                </div>
+                
+                <button class="start-btn" id="startBtn">Начать фокус</button>
+            </div>
+            
+            <!-- Focus View (immersive timer) -->
+            <div class="focus-view" id="focusView">
+                <div class="focus-content">
+                    <div class="focus-task" id="focusTask">Задача</div>
+                    <div class="focus-timer" id="focusTimer">25:00</div>
+                    <div class="focus-status" id="focusStatus">В фокусе</div>
+                    
+                    <div class="focus-controls">
+                        <button class="ctrl-btn pause" id="pauseBtn" title="Пауза">
+                            <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="4" width="4" height="16" rx="1"/>
+                                <rect x="14" y="4" width="4" height="16" rx="1"/>
+                            </svg>
+                        </button>
+                        <button class="ctrl-btn stop" id="stopBtn" title="Остановить">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="6" width="12" height="12" rx="2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STATS SCREEN -->
+        <div class="screen stats-screen" id="statsScreen">
+            <div class="stats-header">
+                <h1 class="stats-title">Статистика</h1>
+                <p class="stats-subtitle">Твой прогресс</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="todayTime">0м</div>
+                    <div class="stat-label">Сегодня</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="weekTime">0м</div>
+                    <div class="stat-label">Неделя</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSessions">0</div>
+                    <div class="stat-label">Сессий</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTime">0ч</div>
+                    <div class="stat-label">Всего</div>
+                </div>
+            </div>
+            
+            <div class="sessions-section">
+                <div class="sessions-header">
+                    <h2 class="sessions-title">История</h2>
+                    <button class="clear-btn" id="clearHistory">Очистить</button>
+                </div>
+                <div class="sessions-list" id="sessionsList"></div>
+            </div>
+        </div>
+        
+        <!-- NAVIGATION -->
+        <nav class="bottom-nav" id="bottomNav">
+            <button class="nav-btn active" data-screen="timerScreen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span class="nav-label">Таймер</span>
+            </button>
+            <button class="nav-btn" data-screen="statsScreen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                <span class="nav-label">Статистика</span>
+            </button>
+        </nav>
+        
+        <div class="toast" id="toast"></div>
+    </div>
+    
+    <script>
+        /* ═══════════════════════════════════════════════════════════════
+           FOCUS APP v2 — Immersive Focus Experience
+           ═══════════════════════════════════════════════════════════════ */
+        
+        const state = {
+            duration: 25 * 60,
+            remaining: 25 * 60,
+            isRunning: false,
+            isPaused: false,
+            currentTask: '',
+            intervalId: null,
+            sessions: [],
+            
+            load() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('focusData') || '{}');
+                    this.sessions = data.sessions || [];
+                } catch(e) {}
+            },
+            
+            save() {
+                localStorage.setItem('focusData', JSON.stringify({ sessions: this.sessions }));
+            }
+        };
+        
+        // DOM shortcuts
+        const $ = s => document.querySelector(s);
+        const $$ = s => document.querySelectorAll(s);
+        
+        const el = {
+            setupView: $('#setupView'),
+            taskInput: $('#taskInput'),
+            timePreview: $('#timePreview'),
+            customMinutes: $('#customMinutes'),
+            startBtn: $('#startBtn'),
+            focusView: $('#focusView'),
+            focusTask: $('#focusTask'),
+            focusTimer: $('#focusTimer'),
+            focusStatus: $('#focusStatus'),
+            pauseBtn: $('#pauseBtn'),
+            pauseIcon: $('#pauseIcon'),
+            stopBtn: $('#stopBtn'),
+            bottomNav: $('#bottomNav'),
+            toast: $('#toast'),
+            todayTime: $('#todayTime'),
+            weekTime: $('#weekTime'),
+            totalSessions: $('#totalSessions'),
+            totalTime: $('#totalTime'),
+            sessionsList: $('#sessionsList'),
+            clearHistory: $('#clearHistory')
+        };
+        
+        // ─────────────────────────────────────────────────────────────
+        // HELPERS
+        // ─────────────────────────────────────────────────────────────
+        
+        const formatTime = s => {
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+        };
+        
+        const formatDuration = (mins, hours=false) => {
+            if (mins < 60 && !hours) return `${mins}м`;
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return m === 0 || hours ? `${h}ч` : `${h}ч ${m}м`;
+        };
+        
+        const isToday = d => new Date(d).toDateString() === new Date().toDateString();
+        const escapeHtml = t => { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+        
+        // ─────────────────────────────────────────────────────────────
+        // TIMER
+        // ─────────────────────────────────────────────────────────────
+        
+        function setDuration(mins) {
+            if (state.isRunning) return;
+            state.duration = mins * 60;
+            state.remaining = state.duration;
+            el.timePreview.textContent = formatTime(state.remaining);
+            $$('.preset-btn').forEach(b => b.classList.toggle('active', +b.dataset.minutes === mins));
+            el.customMinutes.value = '';
+        }
+        
+        function startTimer() {
+            state.currentTask = el.taskInput.value.trim() || 'Фокус-сессия';
+            state.isRunning = true;
+            state.isPaused = false;
+            
+            el.focusTask.textContent = state.currentTask;
+            el.focusTimer.textContent = formatTime(state.remaining);
+            el.focusStatus.textContent = 'В фокусе';
+            el.focusStatus.classList.remove('paused');
+            el.pauseBtn.classList.remove('is-paused');
+            
+            // Pause icon
+            el.pauseIcon.innerHTML = `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>`;
+            
+            // Show focus view
+            el.setupView.classList.add('hidden');
+            el.focusView.classList.add('active');
+            el.bottomNav.classList.add('hidden');
+            
+            // Animate timer entrance, then start breathing
+            el.focusTimer.classList.remove('breathing');
+            el.focusTimer.classList.add('entering');
+            setTimeout(() => {
+                el.focusTimer.classList.remove('entering');
+                el.focusTimer.classList.add('breathing');
+            }, 800);
+            
+            state.intervalId = setInterval(tick, 1000);
+            updateTitle();
+            
+            if ('vibrate' in navigator) navigator.vibrate(15);
+        }
+        
+        function tick() {
+            if (state.remaining > 0) {
+                state.remaining--;
+                el.focusTimer.textContent = formatTime(state.remaining);
+                updateTitle();
+                
+                if (state.remaining % 60 === 0 && state.remaining > 0) {
+                    el.focusTimer.classList.remove('pulse');
+                    void el.focusTimer.offsetWidth;
+                    el.focusTimer.classList.add('pulse');
+                }
+            } else {
+                completeSession();
+            }
+        }
+        
+        function pauseTimer() {
+            if (!state.isRunning) return;
+            
+            if (state.isPaused) {
+                state.isPaused = false;
+                state.intervalId = setInterval(tick, 1000);
+                el.focusStatus.textContent = 'В фокусе';
+                el.focusStatus.classList.remove('paused');
+                el.pauseBtn.classList.remove('is-paused');
+                el.focusTimer.classList.add('breathing');
+                el.pauseIcon.innerHTML = `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>`;
+            } else {
+                state.isPaused = true;
+                clearInterval(state.intervalId);
+                el.focusStatus.textContent = 'Пауза';
+                el.focusStatus.classList.add('paused');
+                el.pauseBtn.classList.add('is-paused');
+                el.focusTimer.classList.remove('breathing');
+                el.focusTimer.classList.remove('entering');
+                el.pauseIcon.innerHTML = `<polygon points="6 4 20 12 6 20"/>`;
+            }
+        }
+        
+        function stopTimer() {
+            const elapsed = state.duration - state.remaining;
+            if (elapsed >= 60) {
+                saveSession(state.currentTask, elapsed);
+                showToast('Сессия сохранена');
+            }
+            resetTimer();
+        }
+        
+        function resetTimer() {
+            clearInterval(state.intervalId);
+            state.intervalId = null;
+            state.isRunning = false;
+            state.isPaused = false;
+            state.remaining = state.duration;
+            
+            el.timePreview.textContent = formatTime(state.remaining);
+            el.focusView.classList.remove('active');
+            el.setupView.classList.remove('hidden');
+            el.bottomNav.classList.remove('hidden');
+            
+            // Clean up animation classes for next session
+            el.focusTimer.classList.remove('breathing', 'entering', 'pulse');
+            
+            document.title = 'Focus';
+        }
+        
+        function completeSession() {
+            clearInterval(state.intervalId);
+            saveSession(state.currentTask, state.duration);
+            showToast('🎉 Отличная работа!');
+            playSound();
+            sendNotification();
+            if ('vibrate' in navigator) navigator.vibrate([100, 50, 100, 50, 200]);
+            resetTimer();
+        }
+        
+        function updateTitle() {
+            if (state.isRunning) {
+                document.title = `${formatTime(state.remaining)} — ${state.currentTask}`;
+            }
+        }
+        
+        // ─────────────────────────────────────────────────────────────
+        // SESSIONS
+        // ─────────────────────────────────────────────────────────────
+        
+        function saveSession(task, secs) {
+            state.sessions.unshift({
+                id: Date.now(),
+                task,
+                duration: secs,
+                completedAt: new Date().toISOString()
+            });
+            if (state.sessions.length > 100) state.sessions = state.sessions.slice(0, 100);
+            state.save();
+            updateStats();
+        }
+        
+        function updateStats() {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekStart = new Date(todayStart);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            
+            let today = 0, week = 0, total = 0;
+            
+            state.sessions.forEach(s => {
+                const d = new Date(s.completedAt);
+                const m = Math.round(s.duration / 60);
+                total += m;
+                if (d >= todayStart) today += m;
+                if (d >= weekStart) week += m;
+            });
+            
+            el.todayTime.textContent = formatDuration(today);
+            el.weekTime.textContent = formatDuration(week);
+            el.totalSessions.textContent = state.sessions.length;
+            el.totalTime.textContent = formatDuration(total, true);
+            
+            renderSessions();
+        }
+        
+        function renderSessions() {
+            if (!state.sessions.length) {
+                el.sessionsList.innerHTML = `
+                    <div class="sessions-empty">
+                        <div class="sessions-empty-icon">⏱</div>
+                        <div>Нет завершённых сессий</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            el.sessionsList.innerHTML = state.sessions.map(s => {
+                const d = new Date(s.completedAt);
+                const time = d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const date = isToday(d) ? 'Сегодня' : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+                return `
+                    <div class="session-item">
+                        <div class="session-task">${escapeHtml(s.task)}</div>
+                        <div class="session-meta">
+                            <span class="session-date">${date}, ${time}</span>
+                            <span class="session-duration">${Math.round(s.duration / 60)}м</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // ─────────────────────────────────────────────────────────────
+        // NAVIGATION
+        // ─────────────────────────────────────────────────────────────
+        
+        function switchScreen(id) {
+            $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+            $$('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+            if (id === 'statsScreen') updateStats();
+        }
+        
+        // ─────────────────────────────────────────────────────────────
+        // NOTIFICATIONS
+        // ─────────────────────────────────────────────────────────────
+        
+        function showToast(msg) {
+            el.toast.textContent = msg;
+            el.toast.classList.add('show');
+            setTimeout(() => el.toast.classList.remove('show'), 2500);
+        }
+        
+        function playSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.setValueAtTime(587, ctx.currentTime);
+                osc.frequency.setValueAtTime(784, ctx.currentTime + 0.15);
+                osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.6);
+            } catch(e) {}
+        }
+        
+        function sendNotification() {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Focus', { body: `"${state.currentTask}" завершена!` });
+            }
+        }
+        
+        // ─────────────────────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────────────────────
+        
+        function init() {
+            state.load();
+            
+            // Presets
+            $$('.preset-btn').forEach(b => {
+                b.addEventListener('click', () => setDuration(+b.dataset.minutes));
+            });
+            
+            // Custom
+            el.customMinutes.addEventListener('change', e => {
+                const m = parseInt(e.target.value);
+                if (m >= 1 && m <= 180) setDuration(m);
+            });
+            
+            // Buttons
+            el.startBtn.addEventListener('click', startTimer);
+            el.pauseBtn.addEventListener('click', pauseTimer);
+            el.stopBtn.addEventListener('click', stopTimer);
+            
+            el.clearHistory.addEventListener('click', () => {
+                if (confirm('Удалить всю историю?')) {
+                    state.sessions = [];
+                    state.save();
+                    updateStats();
+                    showToast('История очищена');
+                }
+            });
+            
+            // Nav
+            $$('.nav-btn').forEach(b => {
+                b.addEventListener('click', () => switchScreen(b.dataset.screen));
+            });
+            
+            // Keyboard
+            document.addEventListener('keydown', e => {
+                if (e.target.tagName === 'INPUT') return;
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    state.isRunning ? pauseTimer() : startTimer();
+                }
+                if (e.code === 'Escape' && state.isRunning) stopTimer();
+            });
+            
+            // Notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                document.addEventListener('click', () => Notification.requestPermission(), { once: true });
+            }
+            
+            updateStats();
+        }
+        
+        document.readyState === 'loading' 
+            ? document.addEventListener('DOMContentLoaded', init) 
+            : init();
+        
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
